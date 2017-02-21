@@ -9,13 +9,13 @@ class BanksController extends Controller
 {
   public function index(Request $request)
   {
-
     /*
           examples of urls
           http://localhost:8000/api/banks?where[id]=13&order=id,asc
           http://localhost:8000/api/banks?where[id]=13
           http://localhost:8000/api/banks?order=id,asc
           http://localhost:8000/api/banks?like=title,Caixa
+
     */
 
     $request['limit'] ? $limit = $request['limit'] : $limit = 15;
@@ -58,6 +58,12 @@ class BanksController extends Controller
 
     return response()->json($result);
 
+  }
+
+  public function show($id)
+  {
+    $result = \App\Bank::findOrFail($id);
+    return response()->json($result);
   }
 
 }
