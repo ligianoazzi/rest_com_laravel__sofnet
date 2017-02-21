@@ -72,4 +72,19 @@ class BanksController extends Controller
     return response()->json($result);
   }
 
+  public function update(Request $request, $id)
+  {
+    $result = \App\Bank::findOrFail($id);
+    $result->update($request->all());
+    return response()->json($result);
+  }
+
+  public function destroy($id)
+  {
+    $result = \App\Bank::findOrFail($id);
+    $result->delete();
+    return response()->json($result);
+  }
+
+
 }
