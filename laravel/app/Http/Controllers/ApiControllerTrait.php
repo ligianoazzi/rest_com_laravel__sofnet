@@ -15,6 +15,8 @@ trait ApiControllerTrait
           http://localhost:8000/api/banks?order=id,asc
           http://localhost:8000/api/banks?like=title,Caixa
 
+          or change 'banks' for the 'accounts' with the result is the same, will show results of table accounts
+
     */
 
     $request['limit'] ? $limit = $request['limit'] : $limit = 15;
@@ -53,6 +55,7 @@ trait ApiControllerTrait
         return $query;
       })
       ->where($where)
+      ->with($this->relationships())
       ->paginate($limit);
 
     return response()->json($result);
@@ -61,8 +64,18 @@ trait ApiControllerTrait
 
   public function show($id)
   {
-    $result = $this->model->findOrFail($id);
-    return response()->json($result);
+    //$result = $this->model->findOrFail($id);
+      // --> modo simples, sem fazer referencia a nenhuma relação
+
+    //$result = $this->model->with(['bank'])->findOrFail($id);
+      // --> assim terei problema quando a função show usar outras models, que não sejam a model accounts
+      // --> se o controller acionar a model accounts, ok, ela realmente tem relacao com a tb banks...
+
+        $result = $this->model->with($this->relationships())
+        ->findOrFail($id);
+        return response()->json($result);
+      // --> fazendo referencia a funcao relationships, esta que vai se ebcarregar de ver quais são as relações
+
   }
 
   public function store(Request $request)
@@ -83,5 +96,13 @@ trait ApiControllerTrait
     $result = $this->model->findOrFail($id);
     $result->delete();
     return response()->json($result);
+  }
+
+  public function relationships()
+  {
+    if(isset($this->relationships)) {
+      return $this->relationships;
+    }
+    return [];
   }
 }
